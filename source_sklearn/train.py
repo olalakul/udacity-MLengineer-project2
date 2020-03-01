@@ -5,8 +5,10 @@ import os
 import pandas as pd
 
 from sklearn.externals import joblib
-
 ## TODO: Import any additional libraries you need to define a model
+from exceptions import ValueError
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 
 
 # Provided model load function
@@ -39,6 +41,19 @@ if __name__ == '__main__':
     parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
     
     ## TODO: Add any additional arguments that you will need to pass into your model
+    parser.add_argument('--sklearn_model_name', type=str, default='SVC', choices=['LogisticRegression', 'SVC'])
+    # both
+    parser.add_argument('--C', type=float, default=0.0) # default is unpenalized
+    parser.add_argument('--class_weight', type=str, default='balanced')
+    # LinearRegression
+    parser.add_argument('--penalty', type=str, default='l2')
+    parser.add_argument('--solver', type=str, default='lbfgs', 
+                        choices=['lbfgs', 'liblinear', 'sag', 'saga', 'newton-cg'])
+    # SVC
+    parser.add_argument('--kernel', type=str, default='poly', choices=['linear', 'poly', 'rbf'])
+    parser.add_argument('--degree', type=int, default=2, choices=[2,3])
+    parser.add_argument('--gamma', type=float, default=1.0)
+    
     
     # args holds all passed-in arguments
     args = parser.parse_args()
@@ -51,17 +66,24 @@ if __name__ == '__main__':
     train_y = train_data.iloc[:,0]
     train_x = train_data.iloc[:,1:]
     
-    
     ## --- Your code here --- ##
-    
-
-    ## TODO: Define a model 
-    model = None
-    
-    
+    ## TODO: Define a model
+    if args.sklearn_model_name=='LogisticRegression':
+        model = LogisticRegression(penalty=args.penalty, 
+                                   C=args.C,
+                                   class_weight=args.class_weight,
+                                   solver=args.solver)
+    elif args.sklearn_model_name=='SVC':
+        model = SVC(class_weight=args.class_weight, 
+                    C=args.C,
+                    kernel=args.kernel,
+                    degree=args.degree
+                    gamma=args.gamma)
+    else:
+        raise ValueError(f'model {args.sklearn_model_name:s} is not possible; choose "LogisticRegression" or "SVC"')
+     
     ## TODO: Train the model
-    
-    
+    model.fit(train_x, train_y)    
     
     ## --- End of your code  --- ##
     
