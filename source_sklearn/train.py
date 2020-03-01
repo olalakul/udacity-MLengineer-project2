@@ -6,7 +6,7 @@ import pandas as pd
 
 from sklearn.externals import joblib
 ## TODO: Import any additional libraries you need to define a model
-from exceptions import ValueError
+#from exceptions import ValueError
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 
@@ -38,12 +38,13 @@ if __name__ == '__main__':
     # Do not need to change
     parser.add_argument('--output-data-dir', type=str, default=os.environ['SM_OUTPUT_DATA_DIR'])
     parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
-    parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
+    # ----- I DID change SM_CHANNEL_TRAIN' --> SM_CHANNEL_TRAINING' because otherwide I got an error
+    parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAINING'])  
     
     ## TODO: Add any additional arguments that you will need to pass into your model
     parser.add_argument('--sklearn_model_name', type=str, default='SVC', choices=['LogisticRegression', 'SVC'])
     # both
-    parser.add_argument('--C', type=float, default=0.0) # default is unpenalized
+    parser.add_argument('--C', type=float, default=1.0) # default is unpenalized
     parser.add_argument('--class_weight', type=str, default='balanced')
     # LinearRegression
     parser.add_argument('--penalty', type=str, default='l2')
@@ -73,14 +74,12 @@ if __name__ == '__main__':
                                    C=args.C,
                                    class_weight=args.class_weight,
                                    solver=args.solver)
-    elif args.sklearn_model_name=='SVC':
+    else:
         model = SVC(class_weight=args.class_weight, 
                     C=args.C,
                     kernel=args.kernel,
-                    degree=args.degree
+                    degree=args.degree,
                     gamma=args.gamma)
-    else:
-        raise ValueError(f'model {args.sklearn_model_name:s} is not possible; choose "LogisticRegression" or "SVC"')
      
     ## TODO: Train the model
     model.fit(train_x, train_y)    
