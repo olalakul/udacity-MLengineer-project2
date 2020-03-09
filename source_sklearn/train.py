@@ -44,7 +44,7 @@ if __name__ == '__main__':
     ## TODO: Add any additional arguments that you will need to pass into your model
     parser.add_argument('--sklearn_model_name', type=str, default='SVC', choices=['LogisticRegression', 'SVC'])
     # both
-    parser.add_argument('--C', type=float, default=1.0) # default is unpenalized
+    parser.add_argument('--CC', type=float, default=1.0)
     parser.add_argument('--class_weight', type=str, default='balanced')
     # LinearRegression
     parser.add_argument('--penalty', type=str, default='l2')
@@ -71,12 +71,12 @@ if __name__ == '__main__':
     ## TODO: Define a model
     if args.sklearn_model_name=='LogisticRegression':
         model = LogisticRegression(penalty=args.penalty, 
-                                   C=args.C,
+                                   C=args.CC,
                                    class_weight=args.class_weight,
                                    solver=args.solver)
     else:
         model = SVC(class_weight=args.class_weight, 
-                    C=args.C,
+                    C=args.CC,
                     kernel=args.kernel,
                     degree=args.degree,
                     gamma=args.gamma)
